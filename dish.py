@@ -1,5 +1,6 @@
 import random
 import copy
+import matplotlib.pyplot as plt
 
 random.seed(8675309)
 SINK_SIZE = 100
@@ -230,26 +231,91 @@ class Algorithms:
 
         return time
 
+
+def algosGraphs(x, wip, bs, ins, ms, qs, sels):
+    plt.scatter(x, ms    , label="Merge Sort"     , marker='D' )
+    plt.scatter(x, wip   , label="Wash in Place"  , marker='*' )
+    plt.scatter(x, bs    , label="Bucket Sort"    , marker='^' )
+    plt.scatter(x, ins   , label="Insertion Sort" , marker='+' )
+    plt.scatter(x, qs    , label="Quick Sort"     , marker='s' )
+    plt.scatter(x, sels  , label="Selection Sort" , marker='o' )
+    plt.plot(x, ms    , linestyle='--' )
+    plt.plot(x, wip   , linestyle='--' )
+    plt.plot(x, bs    , linestyle='--' )
+    plt.plot(x, ins   , linestyle='--' )
+    plt.plot(x, qs    , linestyle='--' )
+    plt.plot(x, sels  , linestyle='--' )
+
+    plt.xlabel('trial')        
+    plt.ylabel('seconds')        
+    plt.legend()
+    plt.show()
+
+def times(x, avg):
+    plt.scatter(x, avg[3], label="Merge Sort"     , marker='D' )
+    plt.scatter(x, avg[0], label="Wash in Place"  , marker='*' )
+    plt.scatter(x, avg[1], label="Bucket Sort"    , marker='^' )
+    plt.scatter(x, avg[2], label="Insertion Sort" , marker='+' )
+    plt.scatter(x, avg[4], label="Quick Sort"     , marker='s' )
+    plt.scatter(x, avg[5], label="Selection Sort" , marker='o' )
+    plt.plot(x   , avg[3], linestyle='--' )
+    plt.plot(x   , avg[0], linestyle='--' )
+    plt.plot(x   , avg[1], linestyle='--' )
+    plt.plot(x   , avg[2], linestyle='--' )
+    plt.plot(x   , avg[4], linestyle='--' )
+    plt.plot(x   , avg[5], linestyle='--' )
+
+    plt.xlabel('trial')
+    plt.ylabel('seconds')
+    plt.legend()
+    plt.show()
+    
 def main():
     NUM_TRIALS = 100
     algTimes = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    algAvgs = [[0.0]*NUM_TRIALS, [0.0]*NUM_TRIALS, [0.0]*NUM_TRIALS,[0.0]*NUM_TRIALS, [0.0]*NUM_TRIALS, [0.0]*NUM_TRIALS] 
+    x = [0] * NUM_TRIALS
+    wip = [0] * NUM_TRIALS
+    bs = [0] * NUM_TRIALS
+    ins = [0] * NUM_TRIALS
+    ms = [0] * NUM_TRIALS
+    qs = [0] * NUM_TRIALS
+    sels = [0] * NUM_TRIALS
     for trial in range(NUM_TRIALS):
         sink = Sink(SINK_SIZE) 
-        algTimes[0] += Algorithms.cleanInPlace(sink.dishArray())
-        algTimes[1] += Algorithms.bucketSort(sink.dishArray())
-        algTimes[2] += Algorithms.insertionSort(sink.dishArray())
-        algTimes[3] += Algorithms.mergeSort(sink.dishArray())
-        algTimes[4] += Algorithms.quickSort(sink.dishArray(), 0, SINK_SIZE-1)
-        algTimes[5] += Algorithms.selectionSort(sink.dishArray())
+        x[trial] = trial
+        wip[trial] = Algorithms.cleanInPlace(sink.dishArray())
+        bs[trial] = Algorithms.bucketSort(sink.dishArray())
+        ins[trial] = Algorithms.insertionSort(sink.dishArray())
+        ms[trial] = Algorithms.mergeSort(sink.dishArray())
+        qs[trial] = Algorithms.quickSort(sink.dishArray(), 0, SINK_SIZE-1)
+        sels[trial] = Algorithms.selectionSort(sink.dishArray())
+        algTimes[0] += wip[trial]
+        algTimes[1] += bs[trial]
+        algTimes[2] += ins[trial]
+        algTimes[3] += ms[trial]
+        algTimes[4] += qs[trial]
+        algTimes[5] += sels[trial]
+        algAvgs[0][trial] = algTimes[0]/(trial+1)
+        algAvgs[1][trial] = algTimes[1]/(trial+1)
+        algAvgs[2][trial] = algTimes[2]/(trial+1)
+        algAvgs[3][trial] = algTimes[3]/(trial+1)
+        algAvgs[4][trial] = algTimes[4]/(trial+1)
+        algAvgs[5][trial] = algTimes[5]/(trial+1)
 
     print(f"Time (in seconds) averages based on {NUM_TRIALS} trials:")
-    print(f"Clean in place result time: {algTimes[0]/NUM_TRIALS:.2f}")
-    print(f"Bucket sort result time: {algTimes[1]/NUM_TRIALS:.2f}")
-    print(f"Insertion sort result time: {algTimes[2]/NUM_TRIALS:.2f}")
-    print(f"Merge sort result time: {algTimes[3]/NUM_TRIALS:.2f}")
-    print(f"Quick sort result time: {algTimes[4]/NUM_TRIALS:.2f}")
-    print(f"Selection sort result time: {algTimes[5]/NUM_TRIALS:.2f}")
+    print(f"Clean in place result time: {algTimes[0]/NUM_TRIALS:.2f}. Minutes: {algTimes[0]/60/NUM_TRIALS:.2f}")
+    print(f"Bucket sort result time: {algTimes[1]/NUM_TRIALS:.2f}. Minutes: {algTimes[1]/60/NUM_TRIALS:.2f}")
+    print(f"Insertion sort result time: {algTimes[2]/NUM_TRIALS:.2f}. Minutes: {algTimes[2]/60/NUM_TRIALS:.2f}")
+    print(f"Merge sort result time: {algTimes[3]/NUM_TRIALS:.2f}. Minutes: {algTimes[3]/60/NUM_TRIALS:.2f}")
+    print(f"Quick sort result time: {algTimes[4]/NUM_TRIALS:.2f}. Minutes: {algTimes[4]/60/NUM_TRIALS:.2f}")
+    print(f"Selection sort result time: {algTimes[5]/NUM_TRIALS:.2f}. Minutes: {algTimes[5]/60/NUM_TRIALS:.2f}")
+
+    algosGraphs(x, wip, bs, ins, ms, qs, sels)
+    times(x, algAvgs)
+    
 
 if __name__ == "__main__":
+    print()
     main()
     print()
